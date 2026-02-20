@@ -1,0 +1,21 @@
+[Unit]
+Description=CoreDNS Rogue DNS Server (DNS Security Lab)
+Documentation=https://coredns.io
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/etc/coredns
+ExecStart=/usr/local/bin/coredns -conf /etc/coredns/Corefile
+ExecReload=/bin/kill -SIGUSR1 $MAINPID
+Restart=on-failure
+RestartSec=5s
+LimitNOFILE=1048576
+LimitNPROC=512
+
+# Capabilities needed to bind to port 53
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
