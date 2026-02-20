@@ -1,0 +1,6 @@
+dnspython>=2.6.0
+requests>=2.31.0
+colorama>=0.4.6
+tqdm>=4.66.0
+scapy>=2.5.0
+dnslib>=0.9.24

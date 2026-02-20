@@ -1,0 +1,8 @@
+# test_domains.txt – Domains to query against the rogue DNS server (UC2)
+# One domain per line. These domains must be configured in coredns/spoofing.conf.
+# ============================================================================
+google.com
+bancosantander.es
+paypal.com
+microsoft.com
+amazon.com
