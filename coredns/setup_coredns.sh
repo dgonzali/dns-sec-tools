@@ -73,10 +73,12 @@ BLOCK
 done < "$CONF"
 
 # Add fixed blocks for exfil, c2, and default forwarder
+# NOTE: randInt is NOT available in the standard CoreDNS template plugin.
+#       We use static IPs instead. The wildcard match (any subdomain) still works.
 cat >> "$COREFILE" <<'EOF'
 exfil.lab {
     template IN A {
-        answer "{{ .Name }} 0 IN A 203.0.113.{{ randInt 1 254 }}"
+        answer "{{ .Name }} 0 IN A 203.0.113.100"
     }
     log
     errors
@@ -84,10 +86,10 @@ exfil.lab {
 
 c2.lab {
     template IN A {
-        answer "{{ .Name }} 0 IN A 198.51.100.{{ randInt 1 254 }}"
+        answer "{{ .Name }} 0 IN A 198.51.100.100"
     }
     template IN TXT {
-        answer "{{ .Name }} 0 IN TXT \"beacon_ack_{{ randInt 1000 9999 }}\""
+        answer "{{ .Name }} 0 IN TXT \"beacon_ack_1234\""
     }
     template IN CNAME {
         answer "{{ .Name }} 0 IN CNAME relay.c2.lab."
@@ -108,13 +110,13 @@ EOF
 echo "[*] Corefile written to $COREFILE"
 
 # ── Step 3: Restart CoreDNS ───────────────────────────────────────────────────
-if systemctl is-active --quiet coredns; then
+if systemctl list-units --all coredns.service | grep -q coredns; then
     echo "[*] Restarting CoreDNS..."
     systemctl restart coredns
-    sleep 1
+    sleep 2
     systemctl status coredns --no-pager -l
 else
-    echo "[!] CoreDNS service not running – start it with: systemctl start coredns"
+    echo "[!] CoreDNS service unit not found – copy coredns.service to /etc/systemd/system/ first"
 fi
 
 echo ""
